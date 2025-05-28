@@ -3,12 +3,27 @@ import React, { useState } from "react";
 import TaskCard from "./TaskCard";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
+/**
+ * タスクの型定義
+ * @property id - タスクの一意なID
+ * @property title - タスクのタイトル
+ * @property status - タスクの状態（"todo" or "done"）
+ */
 type Task = {
   id: number;
   title: string;
   status: "todo" | "done";
 };
 
+/**
+ * Listコンポーネントのprops型
+ * @property title - リストのタイトル
+ * @property tasks - このリストに属するタスク配列
+ * @property setTasks - タスク配列を更新する関数
+ * @property listId - リストの一意なID
+ * @property onEditTitle - リスト名を編集する関数
+ * @property onDeleteList - リストを削除する関数
+ */
 type ListProps = {
   title: string;
   tasks: Task[];
@@ -18,6 +33,11 @@ type ListProps = {
   onDeleteList: () => void;
 };
 
+/**
+ * Listコンポーネント
+ * 1つのリスト（カラム）を表示し、タスクの追加・編集・削除・詳細表示などを管理する
+ * @param props - ListProps型。リストのタイトル、タスク配列、各種操作関数を受け取る
+ */
 const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle, onDeleteList }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -29,17 +49,27 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
   const [editDetailTitle, setEditDetailTitle] = useState("");
   const [editDetailMode, setEditDetailMode] = useState(false);
 
-  // 編集
+  /**
+   * タスク編集
+   * @param id - 編集対象タスクのID
+   * @param newTitle - 新しいタイトル
+   */
   const handleEditTask = (id: number, newTitle: string) => {
     setTasks(tasks.map(task => task.id === id ? { ...task, title: newTitle } : task));
   };
 
-  // 削除
+  /**
+   * タスク削除
+   * @param id - 削除対象タスクのID
+   */
   const handleDeleteTask = (id: number) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // ステータス変更
+  /**
+   * タスクのステータス（完了/未完了）を切り替える
+   * @param id - 対象タスクのID
+   */
   const handleToggleStatus = (id: number) => {
     setTasks(tasks.map(task =>
       task.id === id
@@ -48,7 +78,11 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
     ));
   };
 
-  // タスク追加
+  /**
+   * タスク追加
+   * @param id - 編集対象タスクのID
+   * @param newTitle - 新しいタイトル
+   */
   const handleAddTask = () => {
     if (newTitle.trim() === "") {
       setError("タスク名を入力してください");
@@ -63,14 +97,19 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
     setError("");
   };
 
-  // リスト名編集保存
+  /**
+   * リスト名の編集を保存する
+   */
   const handleSaveTitle = () => {
     if (editTitle.trim() === "") return;
     onEditTitle(editTitle);
     setIsEditingTitle(false);
   };
 
-  // タスク詳細表示
+  /**
+   * タスク詳細モーダルを表示する
+   * @param task - 詳細表示したいタスク
+   */
   const handleShowDetail = (task: Task) => {
     setDetailTask(task);
     setShowDetail(true);
@@ -78,6 +117,9 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
     setEditDetailMode(false);
   };
 
+  /**
+   * タスク詳細モーダルでタイトル編集を保存
+   */
   const handleDetailEditSave = () => {
     if (!detailTask) return;
     if (editDetailTitle.trim() === "") return;
@@ -86,19 +128,27 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
     setEditDetailMode(false);
   };
 
+  /**
+   * タスク詳細モーダルでタスクを削除
+   */
   const handleDetailDelete = () => {
     if (!detailTask) return;
     handleDeleteTask(detailTask.id);
     setShowDetail(false);
   };
 
+  /**
+   * タスク詳細モーダルでステータスを切り替え
+   */
   const handleDetailToggleStatus = () => {
     if (!detailTask) return;
     handleToggleStatus(detailTask.id);
     setDetailTask({ ...detailTask, status: detailTask.status === "done" ? "todo" : "done" });
   };
 
-  // リスト削除ハンドラ
+  /**
+   * リスト削除時の確認ダイアログ
+   */
   const handleDeleteListWithConfirm = () => {
     if (window.confirm("このリストを削除してもよろしいですか？")) {
       onDeleteList();
@@ -117,13 +167,13 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
               onKeyDown={e => { if (e.key === "Enter") handleSaveTitle(); }}
               autoFocus
             />
-            <button className="bg-blue-500 text-white rounded px-2 py-1 text-xs sm:text-sm" onClick={handleSaveTitle}>保存</button>
+            <button className="bg-blue-400 text-white rounded px-2 py-1 text-xs sm:text-sm" onClick={handleSaveTitle}>保存</button>
             <button className="bg-gray-300 rounded px-2 py-1 text-xs sm:text-sm" onClick={() => { setIsEditingTitle(false); setEditTitle(title); }}>キャンセル</button>
           </>
         ) : (
           <>
             <h2 className="font-bold text-base sm:text-lg flex-1 truncate">{title}</h2>
-            <button className="text-xs bg-yellow-400 text-white rounded px-2 py-1" onClick={() => setIsEditingTitle(true)}>編集</button>
+            <button className="text-xs bg-gray-500 text-white rounded px-2 py-1" onClick={() => setIsEditingTitle(true)}>編集</button>
             <button className="text-xs bg-red-500 text-white rounded px-2 py-1" onClick={handleDeleteListWithConfirm}>削除</button>
           </>
         )}
@@ -215,9 +265,13 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
                 <div className="mb-2 text-sm sm:text-base"><span className="font-bold">タイトル：</span>{detailTask.title}</div>
                 <div className="mb-4 text-sm sm:text-base"><span className="font-bold">ステータス：</span>{detailTask.status === "done" ? "完了" : "未完了"}</div>
                 <div className="flex gap-2 mb-2">
-                  <button className="bg-yellow-400 text-white rounded px-3 py-1 text-xs sm:text-sm" onClick={() => setEditDetailMode(true)}>編集</button>
+                  <button className="bg-gray-500 text-white rounded px-3 py-1 text-xs sm:text-sm" onClick={() => setEditDetailMode(true)}>編集</button>
                   <button className="bg-red-500 text-white rounded px-3 py-1 text-xs sm:text-sm" onClick={handleDetailDelete}>削除</button>
-                  <button className="bg-gray-300 rounded px-3 py-1 text-xs sm:text-sm" onClick={handleDetailToggleStatus}>
+                  {/* <button className="bg-lime-500 rounded px-3 py-1 text-xs sm:text-sm" onClick={handleDetailToggleStatus}>
+                    {detailTask.status === "done" ? "未完了に戻す" : "完了にする"}
+                  </button> */}
+                  <button className={(detailTask.status === "done" ? "bg-gray-500" : "bg-green-500") + " rounded px-3 py-1 text-xs sm:text-sm text-white"} 
+                      onClick={handleDetailToggleStatus}>
                     {detailTask.status === "done" ? "未完了に戻す" : "完了にする"}
                   </button>
                 </div>

@@ -2,9 +2,14 @@
 import React, { useEffect, useState } from "react";
 import List from "./List";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
+
+// ローカル
 const LOCAL_STORAGE_KEY = "todo-board-lists";
-
+// 初期リストデータ
 const defaultLists = [
   {
     id: 1,
@@ -37,7 +42,13 @@ interface ListType {
   tasks: Task[];
 }
 
+
+/**
+ * Boardコンポーネント
+ * 複数のリスト（カラム）を横並びまたは縦並びで表示し、リストやタスクの追加・並び替え・編集・削除を管理する
+ */
 const Board: React.FC = () => {
+  // リストの状態
   const [lists, setLists] = useState<ListType[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -45,14 +56,21 @@ const Board: React.FC = () => {
     }
     return defaultLists;
   });
+  // 新規リスト名
   const [newListTitle, setNewListTitle] = useState("");
+  // エラーメッセージ
   const [error, setError] = useState("");
 
+  // listsの変更をローカルストレージに保存
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(lists));
   }, [lists]);
 
-  // Listのtasksを更新するための関数
+  /**
+   * 指定リストのタスク配列を更新
+   * @param listId - 対象リストのID
+   * @param newTasks - 新しいタスク配列
+   */
   const updateTasks = (listId: number, newTasks: Task[]) => {
     setLists((prev) =>
       prev.map((list) =>
@@ -61,7 +79,9 @@ const Board: React.FC = () => {
     );
   };
 
-  // リスト追加
+  /**
+   * 新しいリストを追加
+   */
   const handleAddList = () => {
     if (newListTitle.trim() === "") {
       setError("リスト名を入力してください");
@@ -79,7 +99,11 @@ const Board: React.FC = () => {
     setError("");
   };
 
-  // リスト名編集
+  /**
+   * リスト名を編集
+   * @param listId - 編集対象リストのID
+   * @param newTitle - 新しいリスト名
+   */
   const handleEditListTitle = (listId: number, newTitle: string) => {
     setLists((prev) =>
       prev.map((list) =>
@@ -88,12 +112,18 @@ const Board: React.FC = () => {
     );
   };
 
-  // リスト削除
+  /**
+   * リストを削除
+   * @param listId - 削除対象リストのID
+   */
   const handleDeleteList = (listId: number) => {
     setLists((prev) => prev.filter((list) => list.id !== listId));
   };
 
-  // ドラッグ＆ドロップの処理
+  /**
+   * ドラッグ＆ドロップ完了時の処理
+   * @param result - ドラッグ操作の結果情報
+   */
   const onDragEnd = (result: DropResult) => {
     const { source, destination, type } = result;
     if (!destination) return;
@@ -159,21 +189,13 @@ const Board: React.FC = () => {
             ))}
             {provided.placeholder}
             {/* リスト追加UI */}
-            <div className="bg-white rounded-lg shadow-md w-full sm:w-72 min-w-0 sm:min-w-[260px] max-w-xs p-2 sm:p-4 flex flex-col justify-center items-center h-[15vh]">
-              <input
-                className="border rounded px-2 py-1 w-full mb-2"
-                value={newListTitle}
-                onChange={(e) => setNewListTitle(e.target.value)}
-                placeholder="新しいリスト名"
-              />
-              {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
-              <button
-                className="bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600 w-full"
-                onClick={handleAddList}
-              >
-                リストを追加
-              </button>
-            </div>
+            <Card className="w-full max-w-xs sm:w-72 min-w-0 sm:min-w-[260px]">
+              <CardContent>
+                <Input placeholder="新しいリスト名" value={newListTitle} onChange={(e) => setNewListTitle(e.target.value)} />
+                {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
+                <Button className="w-full mt-2 sm:mt-4 bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600 text-xs sm:text-sm" onClick={handleAddList}>リストを追加</Button>
+              </CardContent>
+            </Card>
           </div>
         )}
       </Droppable>

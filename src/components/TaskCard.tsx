@@ -1,11 +1,18 @@
 import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
+// 型定義
 type Task = {
   id: number;
   title: string;
   status: "todo" | "done";
 };
 
+/**
+ * TaskCardコンポーネントのprops型
+ * @property task - 表示するタスク情報
+ */
 type TaskCardProps = {
   task: Task;
   onEdit: (id: number, newTitle: string) => void;
@@ -13,14 +20,21 @@ type TaskCardProps = {
   onToggleStatus: (id: number) => void;
 };
 
+/**
+ * TaskCardコンポーネント
+ * 1つのタスクカード（タイトルとステータス）を表示する
+ * @param props - TaskCardProps型。表示するタスク情報を受け取る
+ */
 const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
   return (
-    <div className={`rounded bg-white p-3 shadow flex items-center justify-between border-l-4 ${task.status === "done" ? "border-green-400" : "border-blue-400"}`}>
+    <Card>
+    <CardContent className="flex justify-between items-center">
       <span>{task.title}</span>
-      <span className={`text-xs px-2 py-1 rounded ${task.status === "done" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+      <Badge className={task.status === "done" ? "bg-green-500" : "bg-gray-400"}>
         {task.status === "done" ? "完了" : "未完了"}
-      </span>
-    </div>
+      </Badge>
+    </CardContent>
+  </Card>
   );
 };
 
