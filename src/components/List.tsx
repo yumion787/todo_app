@@ -156,7 +156,10 @@ const List: React.FC<ListProps> = ({ title, tasks, setTasks, listId, onEditTitle
   };
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm md:max-w-md p-2 sm:p-4 flex flex-col min-w-[220px]">
+    // <div className="bg-gray-100 rounded-lg shadow-md w-full max-w-xs sm:max-w-sm md:max-w-md p-2 sm:p-4 flex flex-col min-w-[220px]">
+    //  <div className="bg-white/80 rounded-xl shadow-xl w-full max-w-xs min-w-[250px] p-4 mb-4">
+    // <div className="bg-white/80 rounded-xl shadow-xl  ">
+    <div className="bg-white/80 rounded-xl shadow-xl w-full max-w-xs min-w-[250px] p-4 mb-4">
       <div className="flex items-center mb-2 sm:mb-4 gap-2">
         {isEditingTitle ? (
           <>

@@ -13,22 +13,22 @@ const LOCAL_STORAGE_KEY = "todo-board-lists";
 const defaultLists = [
   {
     id: 1,
-    title: "スプリント1(1/21～2/3)",
+    title: "スプリント1",
     tasks: [
-      { id: 1, title: "サインアップ機能", status: "todo" },
-      { id: 2, title: "ログイン機能", status: "done" },
+      { id: 1, title: "トレーニングする", status: "todo" },
+      { id: 2, title: "アカウント作成", status: "done" },
     ],
   },
   {
     id: 2,
-    title: "スプリント2(2/4～2/17)",
+    title: "スプリント2",
     tasks: [
-      { id: 3, title: "ログ表示機能", status: "todo" },
-      { id: 4, title: "Twitter投稿機能", status: "todo" },
+      { id: 3, title: "自炊する", status: "todo" },
+      { id: 4, title: "X投稿", status: "todo" },
     ],
   },
   // ...他のリスト...
-];
+] as ListType[];
 
 // 型定義
 interface Task {
@@ -49,19 +49,27 @@ interface ListType {
  */
 const Board: React.FC = () => {
   // リストの状態
-  const [lists, setLists] = useState<ListType[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-    }
-    return defaultLists;
-  });
+  const [lists, setLists] = useState<ListType[]>(defaultLists);
   // 新規リスト名
   const [newListTitle, setNewListTitle] = useState("");
   // エラーメッセージ
   const [error, setError] = useState("");
 
   // listsの変更をローカルストレージに保存
+  useEffect(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as ListType[];
+      const fixed = parsed.map((list) => ({
+        ...list,
+        tasks: list.tasks.map((task) => ({
+          ...task,
+          status: task.status === "done" ? "done" : "todo" as "todo" | "done"
+        }))
+      }));
+      setLists(fixed as ListType[]);
+    }
+  }, []);
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(lists));
   }, [lists]);
@@ -173,7 +181,7 @@ const Board: React.FC = () => {
                     {...dragProvided.draggableProps}
                     {...dragProvided.dragHandleProps}
                   >
-                    <div className="bg-gray-100 rounded-lg shadow-md w-full max-w-xs sm:w-72 min-w-0 sm:min-w-[260px] p-2 sm:p-4 flex flex-col">
+                    <div className="bg-gray-100 rounded-lg shadow-md max-w-xs min-w-80 sm:min-w-[260px] p-2 sm:p-4 flex flex-col">
                       <List
                         title={list.title}
                         tasks={list.tasks}
@@ -189,7 +197,7 @@ const Board: React.FC = () => {
             ))}
             {provided.placeholder}
             {/* リスト追加UI */}
-            <Card className="w-full max-w-xs sm:w-72 min-w-0 sm:min-w-[260px]">
+            <Card className="max-w-xs min-w-80 sm:min-w-[260px]">
               <CardContent>
                 <Input placeholder="新しいリスト名" value={newListTitle} onChange={(e) => setNewListTitle(e.target.value)} />
                 {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
