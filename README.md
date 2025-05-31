@@ -1,6 +1,6 @@
 ## デモサイト
 https://todo-4knmqukrv-yumions-projects.vercel.app/
-![scr-todo-app](https://github.com/user-attachments/assets/84363567-dc60-41a2-ab55-a679f2ce71da)
+![scr-todo-app](https://github.com/user-attachments/assets/22467c48-3d67-42cf-b2fb-fc89922c2185)
 
 
 ---
